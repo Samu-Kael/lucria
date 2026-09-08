@@ -12,8 +12,14 @@ export async function createMetaAction(
   });
 
   if (!resposta.ok) {
-    const erro = await resposta.json();
-    throw new Error(erro.mensagem ?? "Erro ao criar meta");
+    const contentType = resposta.headers.get("content-type");
+    if (contentType && contentType.includes("application/json")) {
+      const erro = await resposta.json();
+      throw new Error(erro.mensagem ?? "Erro ao criar meta");
+    } else {
+      const textoErro = await resposta.text();
+      throw new Error(textoErro || "Erro interno no servidor ao criar meta");
+    }
   }
 
   const novaMeta: Meta = await resposta.json();

@@ -12,8 +12,14 @@ export async function createDespesaAction(
   });
 
   if (!resposta.ok) {
-    const erro = await resposta.json();
-    throw new Error(erro.mensagem ?? "Erro ao criar despesa");
+    const contentType = resposta.headers.get("content-type");
+    if (contentType && contentType.includes("application/json")) {
+      const erro = await resposta.json();
+      throw new Error(erro.mensagem ?? "Erro ao criar despesa");
+    } else {
+      const textoErro = await resposta.text();
+      throw new Error(textoErro || "Erro interno no servidor ao criar despesa");
+    }
   }
 
   const novaDespesa: Despesa = await resposta.json();

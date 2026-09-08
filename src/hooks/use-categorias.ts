@@ -8,13 +8,11 @@ import type { Categoria } from "@/shared/types/domain/categoria";
 import type { CreateCategoriaDTO } from "@/modules/categorias/dto/create-categoria.dto";
 
 export function useCategorias() {
-  // Estados Padrão do Domínio
   const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [carregando, setCarregando] = useState(true);
   const [salvando, setSalvando] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
 
-  // Estados Específicos de Formulário (mantidos do seu hook original)
   const [categoriaSelecionada, setCategoriaSelecionada] = useState<string>('');
   const [nomeOutraCategoria, setNomeOutraCategoria] = useState<string>('');
   const [isOutraSelected, setIsOutraSelected] = useState(false);
@@ -42,7 +40,6 @@ export function useCategorias() {
       setErro(null);
       const listaNova = await createCategoriaAction(categorias, dados);
       setCategorias(listaNova);
-      // Retornamos a última inserida para a função salvarCategoriaSeNecessario usar
       return listaNova[listaNova.length - 1]; 
     } catch (e: unknown) {
       setErro(e instanceof Error ? e.message : "Erro ao criar categoria");
@@ -62,7 +59,6 @@ export function useCategorias() {
     }
   }
 
-  // --- Lógica de UI do formulário ---
   const handleSelectCategoria = (valor: string) => {
     setCategoriaSelecionada(valor);
     if (valor.toLowerCase() === 'cat_padrao_outra' || valor.toLowerCase() === 'outra') {
@@ -77,8 +73,8 @@ export function useCategorias() {
     if (isOutraSelected && nomeOutraCategoria.trim()) {
       const novaCategoria = await adicionarCategoria({
         nome: nomeOutraCategoria,
-        cor: "#6B7280", // Defina uma cor padrão (ex: cinza) se necessário
-        isPadrao: false, // Indica que não é uma categoria padrão do sistema
+        cor: "#6B7280",
+        isPadrao: false,
       });
       
       if (novaCategoria) {
@@ -89,7 +85,6 @@ export function useCategorias() {
   };
 
   return {
-    // Retornos do Domínio
     categorias,
     carregando,
     salvando,
@@ -97,7 +92,6 @@ export function useCategorias() {
     adicionarCategoria,
     removerCategoria,
     refetch: loadCategorias,
-    // Retornos do Formulário
     categoriaSelecionada,
     nomeOutraCategoria,
     isOutraSelected,

@@ -3,7 +3,7 @@
 import { useMetas } from '@/hooks/use-metas';
 
 export function FormMeta() {
-  const { handleCreateMeta, isSubmitting, errorMsg } = useMetas();
+  const { adicionarMeta, salvando, erro } = useMetas();
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -15,20 +15,22 @@ export function FormMeta() {
 
     const novaMeta = {
       titulo: formData.get('titulo') as string,
-      valorObjetivo: Number(valorDigitado),
+      valorAlvo: Number(valorDigitado), // Mapeado corretamente para o DTO/Banco
       prazo: formData.get('prazo') as string,
+      acumulado: 0,
     };
 
-    await handleCreateMeta(novaMeta, form);
+    await adicionarMeta(novaMeta);
+    form.reset();
   };
 
   return (
     <form onSubmit={onSubmit} className="space-y-4 bg-zinc-900 p-6 rounded-lg border border-zinc-800">
       <h2 className="text-xl font-bold text-blue-400 mb-4">Nova Meta</h2>
 
-      {errorMsg && (
+      {erro && (
         <div className="bg-red-500/10 border border-red-500/50 text-red-500 p-3 rounded text-sm">
-          {errorMsg}
+          {erro}
         </div>
       )}
 
@@ -39,7 +41,7 @@ export function FormMeta() {
           name="titulo"
           id="titulo"
           required
-          className="w-full p-2 rounded-md border border-zinc-700 bg-zinc-800 text-white focus:ring-2 focus:ring-blue-500"
+          className="w-full p-2 rounded-md border border-zinc-700 bg-zinc-800 text-white focus:ring-2 focus:ring-blue-500 outline-none"
           placeholder="Ex: Viagem de Fim de Ano, Reserva de Emergência"
         />
       </div>
@@ -52,7 +54,7 @@ export function FormMeta() {
           name="valorObjetivo"
           id="valorObjetivo"
           required
-          className="w-full p-2 rounded-md border border-zinc-700 bg-zinc-800 text-white focus:ring-2 focus:ring-blue-500"
+          className="w-full p-2 rounded-md border border-zinc-700 bg-zinc-800 text-white focus:ring-2 focus:ring-blue-500 outline-none"
           placeholder="5000.00"
         />
       </div>
@@ -64,16 +66,16 @@ export function FormMeta() {
           name="prazo"
           id="prazo"
           required
-          className="w-full p-2 rounded-md border border-zinc-700 bg-zinc-800 text-white focus:ring-2 focus:ring-blue-500"
+          className="w-full p-2 rounded-md border border-zinc-700 bg-zinc-800 text-white focus:ring-2 focus:ring-blue-500 outline-none"
         />
       </div>
 
       <button
         type="submit"
-        disabled={isSubmitting}
+        disabled={salvando}
         className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-md transition-colors disabled:opacity-50"
       >
-        {isSubmitting ? 'Salvando...' : 'Criar Meta'}
+        {salvando ? 'Salvando...' : 'Criar Meta'}
       </button>
     </form>
   );

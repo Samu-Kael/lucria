@@ -1,57 +1,49 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import { getReceitasAction } from "@/actions/receitas/get-receitas.action";
-import { createReceitaAction } from "@/actions/receitas/create-receita.action";
-import { deleteReceitaAction } from "@/actions/receitas/delete-receita.action";
-import type { Receita } from "@/shared/types/domain/receita";
-import type { CreateReceitaDTO } from "@/modules/receitas/dto/create-receita.dto";
+import { useState, useEffect } from 'react';
+import type { Receita } from '@/shared/types/domain/receita';
 
 export function useReceitas() {
   const [receitas, setReceitas] = useState<Receita[]>([]);
-  const [carregando, setCarregando] = useState(true);
   const [salvando, setSalvando] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
 
-  async function loadReceitas() {
-    try {
-      setCarregando(true);
-      setErro(null);
-      const lista = await getReceitasAction();
-      setReceitas(lista);
-    } catch (e: unknown) {
-      setErro(e instanceof Error ? e.message : "Erro ao carregar receitas");
-    } finally {
-      setCarregando(false);
-    }
-  }
-
+  // Carrega a lista inicial ao abrir a tela
   useEffect(() => {
-    void loadReceitas();
+    fetch('/api/receitas')
+      .then((res) => res.json())
+      .then((data) => setReceitas(data))
+      .catch(() => setErro('Erro ao carregar receitas'));
   }, []);
 
-  async function adicionarReceita(dados: CreateReceitaDTO) {
+  const adicionarReceita = async (dados: Omit<Receita, 'id' | 'criadoEm'>) => {
+    setSalvando(true);
+    setErro(null);
+
     try {
-      setSalvando(true);
-      setErro(null);
-      const listaNova = await createReceitaAction(receitas, dados);
-      setReceitas(listaNova);
-    } catch (e: unknown) {
-      setErro(e instanceof Error ? e.message : "Erro ao criar receita");
+      const resposta = await fetch('/api/receitas', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(dados),
+      });
+
+      if (!resposta.ok) throw new Error('Erro ao salvar receita');
+
+      const novaReceita: Receita = await resposta.json();
+
+      // ATUALIZAÇÃO LOCAL IMEDIATA: Adiciona o novo item ao final da lista existente
+      setReceitas((estadoAnterior) => [...estadoAnterior, novaReceita]);
+    } catch (err: any) {
+      setErro(err.message || 'Erro inesperado');
     } finally {
       setSalvando(false);
     }
-  }
+  };
 
-  async function removerReceita(id: string) {
-    try {
-      setErro(null);
-      const listaNova = await deleteReceitaAction(receitas, id);
-      setReceitas(listaNova);
-    } catch (e: unknown) {
-      setErro(e instanceof Error ? e.message : "Erro ao remover receita");
-    }
-  }
-
-  return { receitas, carregando, salvando, erro, adicionarReceita, removerReceita, refetch: loadReceitas };
+  return {
+    receitas,
+    adicionarReceita,
+    salvando,
+    erro,
+  };
 }

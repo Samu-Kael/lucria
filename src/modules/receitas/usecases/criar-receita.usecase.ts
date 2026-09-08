@@ -16,4 +16,4 @@ export async function criarReceitaUseCase(dados: CreateReceitaDTO): Promise<Rece
   }
 
   return ReceitasRepository.salvar(dados);
-}S
+}

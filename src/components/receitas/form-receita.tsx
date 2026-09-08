@@ -16,14 +16,15 @@ export function FormReceita() {
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     
+    const form = e.currentTarget;
+    
     const nomeCategoriaFinal = await salvarCategoriaSeNecessario();
     
-    const selectElement = e.currentTarget.elements.namedItem('categoria') as HTMLSelectElement;
-    const categoriaSelecionada = nomeCategoriaFinal || selectElement.value;
+    const selectElement = form.elements.namedItem('categoria') as HTMLSelectElement;
+    const categoriaSelecionada = nomeCategoriaFinal || selectElement?.value;
 
     if (!categoriaSelecionada) return;
 
-   
     const novaReceita = {
       descricao,
       valor: Number(valor),
