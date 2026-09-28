@@ -18,9 +18,9 @@ export function Sidebar() {
       <div className="p-6 space-y-8">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-lg bg-emerald-600 flex items-center justify-center font-bold text-white shadow-lg shadow-emerald-600/20">
-            M
+            LC
           </div>
-          <h2 className="text-lg font-bold text-white tracking-wide">Mente Milionária</h2>
+          <h2 className="text-lg font-bold text-white tracking-wide">Lucria</h2>
         </div>
 
         <nav className="space-y-1.5">

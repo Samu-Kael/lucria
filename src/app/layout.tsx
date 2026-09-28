@@ -6,7 +6,7 @@ import { Sidebar } from '@/layouts/sidebar';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Mente Milionária - Controlo Financeiro',
+  title: 'Lucria - Controle Financeiro',
   description: 'Gestão de despesas, receitas e metas financeiras',
 };
 
