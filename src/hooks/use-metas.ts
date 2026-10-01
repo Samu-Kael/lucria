@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { getMetasAction } from "@/actions/metas/get-metas.action";
 import { createMetaAction } from "@/actions/metas/create-meta.action";
 import { deleteMetaAction } from "@/actions/metas/delete-meta.action";
-import { adicionarSaldoMetaHandler } from "@/modules/metas/handlers/adicionar-saldo-meta.handler";
+import { adicionarSaldoAction } from "@/actions/metas/adicionar-saldo-meta.action";
 import type { Meta } from "@/shared/types/domain/meta";
 import type { CreateMetaDTO } from "@/modules/metas/dto/create-meta.dto";
 
@@ -58,8 +58,8 @@ export function useMetas() {
     try {
       setSalvando(true);
       setErro(null);
-      await adicionarSaldoMetaHandler({ id, valor });
-      await loadMetas();
+      await adicionarSaldoAction(id, valor);
+      await loadMetas(); 
     } catch (e: unknown) {
       setErro(e instanceof Error ? e.message : "Erro ao adicionar saldo");
     } finally {
