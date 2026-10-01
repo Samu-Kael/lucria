@@ -4,7 +4,7 @@ import { useMetas } from '@/hooks/use-metas';
 import { FormMeta } from '@/components/metas/form-meta';
 
 export default function MetasPage() {
-  const { metas, isLoading, handleDeleteMeta, handleAddSaldo } = useMetas();
+  const { metas, carregando, removerMeta, adicionarSaldo } = useMetas();
 
   return (
     <main className="max-w-6xl mx-auto space-y-6">
@@ -21,7 +21,7 @@ export default function MetasPage() {
         <div className="lg:col-span-2 space-y-4">
           <h2 className="text-xl font-bold text-white">Progresso dos Objetivos</h2>
 
-          {isLoading ? (
+          {carregando ? (
             <p className="text-zinc-400 text-sm">Carregando metas...</p>
           ) : metas.length === 0 ? (
             <p className="text-zinc-500 text-sm">Nenhuma meta cadastrada ainda.</p>
@@ -29,8 +29,8 @@ export default function MetasPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {metas.map((meta: any) => {
                 const acumulado = Number(meta.acumulado || 0);
-                const objetivo = Number(meta.valorObjetivo);
-                const porcentagem = Math.min(100, Math.round((acumulado / objetivo) * 100));
+                const objetivo = Number(meta.valorAlvo || meta.valorObjetivo || 0);
+                const porcentagem = objetivo > 0 ? Math.min(100, Math.round((acumulado / objetivo) * 100)) : 0;
 
                 return (
                   <div key={meta.id} className="bg-zinc-900 border border-zinc-800 p-5 rounded-lg space-y-4">
@@ -42,7 +42,7 @@ export default function MetasPage() {
                         </p>
                       </div>
                       <button 
-                        onClick={() => handleDeleteMeta(meta.id)} 
+                        onClick={() => removerMeta(meta.id)} 
                         className="text-red-400 text-xs hover:underline"
                       >
                         Excluir
@@ -77,7 +77,7 @@ export default function MetasPage() {
                         if (resposta) {
                           const valorParaAdicionar = parseFloat(resposta.replace(',', '.'));
                           if (!isNaN(valorParaAdicionar) && valorParaAdicionar > 0) {
-                            handleAddSaldo(meta.id, valorParaAdicionar);
+                            adicionarSaldo(meta.id, valorParaAdicionar);
                           } else {
                             alert('Por favor, digite um valor válido maior que zero.');
                           }

@@ -4,8 +4,7 @@ import { useDespesas } from '@/hooks/use-despesas';
 import { FormDespesa } from '@/components/despesas/form-despesa';
 
 export default function DespesasPage() {
-  const { despesas, isLoading, handleDeleteDespesa } = useDespesas();
-
+const { despesas, carregando, removerDespesa } = useDespesas();
   return (
     <main className="max-w-6xl mx-auto space-y-6">
       <div>
@@ -21,7 +20,7 @@ export default function DespesasPage() {
         <div className="lg:col-span-2 bg-zinc-900 p-6 rounded-lg border border-zinc-800 space-y-4">
           <h2 className="text-xl font-bold text-white mb-4">Minhas Despesas</h2>
 
-          {isLoading ? (
+          {carregando ? (
             <p className="text-zinc-400 text-sm">Carregando despesas...</p>
           ) : despesas.length === 0 ? (
             <p className="text-zinc-500 text-sm">Nenhuma despesa cadastrada ainda.</p>
@@ -55,7 +54,7 @@ export default function DespesasPage() {
                       <td className="py-3 px-4 text-right">
                         {/* BOTÃO DE EXCLUIR */}
                         <button
-                          onClick={() => handleDeleteDespesa(item.id)}
+                          onClick={() => removerDespesa(item.id)}
                           className="bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 px-3 py-1 rounded text-xs transition-colors"
                         >
                           Excluir

@@ -4,7 +4,7 @@ import { useReceitas } from '@/hooks/use-receitas';
 import { FormReceita } from '@/components/receitas/form-receita';
 
 export default function ReceitasPage() {
-  const { receitas, isLoading, handleDeleteReceita } = useReceitas();
+  const { receitas, carregando, removerReceita } = useReceitas();
 
   return (
     <main className="max-w-6xl mx-auto space-y-6">
@@ -21,7 +21,7 @@ export default function ReceitasPage() {
         <div className="lg:col-span-2 bg-zinc-900 p-6 rounded-lg border border-zinc-800 space-y-4">
           <h2 className="text-xl font-bold text-white mb-4">Minhas Receitas</h2>
 
-          {isLoading ? (
+          {carregando ? (
             <p className="text-zinc-400 text-sm">Carregando receitas...</p>
           ) : receitas.length === 0 ? (
             <p className="text-zinc-500 text-sm">Nenhuma receita cadastrada ainda.</p>
@@ -47,15 +47,14 @@ export default function ReceitasPage() {
                         </span>
                       </td>
                       <td className="py-3 px-4 text-zinc-400">
-                        {new Date(item.data).toLocaleDateString('pt-BR')}
+                        {item.data ? new Date(item.data).toLocaleDateString('pt-BR') : '-'}
                       </td>
                       <td className="py-3 px-4 font-bold text-emerald-400">
                         + R$ {Number(item.valor).toFixed(2)}
                       </td>
                       <td className="py-3 px-4 text-right">
-                        {/* BOTÃO DE EXCLUIR */}
                         <button
-                          onClick={() => handleDeleteReceita(item.id)}
+                          onClick={() => removerReceita(item.id)}
                           className="bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 px-3 py-1 rounded text-xs transition-colors"
                         >
                           Excluir

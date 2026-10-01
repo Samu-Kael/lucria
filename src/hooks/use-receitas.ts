@@ -5,15 +5,27 @@ import type { Receita } from '@/shared/types/domain/receita';
 
 export function useReceitas() {
   const [receitas, setReceitas] = useState<Receita[]>([]);
+  const [carregando, setCarregando] = useState(true);
   const [salvando, setSalvando] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
 
-  // Carrega a lista inicial ao abrir a tela
+  async function carregarReceitas() {
+    try {
+      setCarregando(true);
+      setErro(null);
+      const res = await fetch('/api/receitas');
+      if (!res.ok) throw new Error('Erro ao carregar receitas');
+      const data = await res.json();
+      setReceitas(data);
+    } catch (err: any) {
+      setErro(err.message || 'Erro ao carregar receitas');
+    } finally {
+      setCarregando(false);
+    }
+  }
+
   useEffect(() => {
-    fetch('/api/receitas')
-      .then((res) => res.json())
-      .then((data) => setReceitas(data))
-      .catch(() => setErro('Erro ao carregar receitas'));
+    void carregarReceitas();
   }, []);
 
   const adicionarReceita = async (dados: Omit<Receita, 'id' | 'criadoEm'>) => {
@@ -30,8 +42,6 @@ export function useReceitas() {
       if (!resposta.ok) throw new Error('Erro ao salvar receita');
 
       const novaReceita: Receita = await resposta.json();
-
-      // ATUALIZAÇÃO LOCAL IMEDIATA: Adiciona o novo item ao final da lista existente
       setReceitas((estadoAnterior) => [...estadoAnterior, novaReceita]);
     } catch (err: any) {
       setErro(err.message || 'Erro inesperado');
@@ -40,10 +50,28 @@ export function useReceitas() {
     }
   };
 
+  const removerReceita = async (id: string) => {
+    try {
+      setErro(null);
+      const resposta = await fetch(`/api/receitas/${id}`, {
+        method: 'DELETE',
+      });
+
+      if (!resposta.ok) throw new Error('Erro ao remover receita');
+
+      setReceitas((estadoAnterior) => estadoAnterior.filter((item) => item.id !== id));
+    } catch (err: any) {
+      setErro(err.message || 'Erro ao remover receita');
+    }
+  };
+
   return {
     receitas,
-    adicionarReceita,
+    carregando,
     salvando,
     erro,
+    adicionarReceita,
+    removerReceita,
+    refetch: carregarReceitas,
   };
 }
